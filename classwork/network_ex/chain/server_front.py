@@ -3,7 +3,7 @@ from threading import Thread
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostname()
-port = 12346
+port = 12347
 
 s.bind((host, port))
 s.listen(5)
@@ -24,21 +24,22 @@ def client_process(sock, addr):
        
     udp_sock = socket.socket(socket.AF_INET,
                      socket.SOCK_DGRAM)
-    udp_sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
-    data, addr = source_udp.recvfrom(1024)
-    if data.decode() == "OK":        
-        response = 'OK'
-        print(f'Resending "{response}" to {addr} ...')
-        sock.send(response.encode())
-    else:
-        print(f"Got wrong response: {data.decode()}")
+    udp_sock.sendto(data.encode(),
+                    (UDP_IP_DEST, UDP_PORT_DEST))
+    data_udp, addr_udp = source_udp.recvfrom(1024)
+
+    print(f'Got UDP from {addr_udp}: {data_udp}')
+    response = 'OK'
+    print(f'Resending "{response}" to {addr} ...')
+    sock.send(response.encode())
 
     sock.close()
     
 while True:
-    inp = input()
-    if inp == 'break':
-        break
+    print("Server started")
+    # inp = input()
+    # if inp == 'break':
+    #     break
 
     print('Server is waiting for incoming connect...')
     sock, addr = s.accept()
