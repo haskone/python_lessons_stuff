@@ -1,3 +1,6 @@
+"""
+Contains only database-specific functions.
+"""
 import os
 import sys
 import datetime
@@ -27,6 +30,7 @@ class Task(Base):
 
 
 engine = create_engine('sqlite:///db.db')
+
 Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)
@@ -45,12 +49,19 @@ def update_task(name, desc, exec_time, priority):
     task.exec_time = exec_time
     session.add(task)
     session.commit()
-
     return True
 
 
-def delete_task():
-    pass
+def delete_task(name):
+    task = session.query(Task).filter_by(
+        name=name).first()
+
+    if task is None:
+        return False
+
+    session.delete(task)
+    session.commit()
+    return True
 
 
 def make_task(name, desc, exec_time, priority):
